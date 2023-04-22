@@ -52,7 +52,9 @@ INSTALLED_APPS = [
     'django_filters',
     'users',
     'api',
-    'sorl.thumbnail'
+    'recipe',
+    'colorfield',
+    'sorl.thumbnail',
 ]
 
 MIDDLEWARE = [
@@ -88,6 +90,7 @@ WSGI_APPLICATION = 'backend_project.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+
 
 DATABASES = {
     'default': {

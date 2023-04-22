@@ -1,21 +1,21 @@
-
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import (IsAuthenticated,
+                                        AllowAny)
 from .models import User
 from .pagination import UserPagination
 from .serializers import (UserCreateSerializer, UserPasswordSerializer,
                           UserSerializer)
-from api.models import Follow
+from recipe.models import Follow
 from api.serializers import UserFollowSerializer
+from api.utils import CustomMixin
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(CustomMixin, viewsets.ModelViewSet):
     queryset = User.objects.all()
     pagination_class = UserPagination
-    # permission_classes = [IsAuthenticatedOrReadOnly, ]
+    permission_classes = [AllowAny, ]
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -45,7 +45,6 @@ class UserViewSet(viewsets.ModelViewSet):
             pagination_class=UserPagination,
             permission_classes=[IsAuthenticated, ])
     def subscriptions(self, request):
-        print(request.user)
         query = (User.objects.filter(followers__user=request.user)
                  .select_related().order_by('id'))
         recipes_limit = self.request.query_params.get('recipes_limit')
@@ -61,26 +60,10 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(methods=['post', 'delete'],
             detail=True,
             permission_classes=[IsAuthenticated])
-    def subscribe(self, request, pk):
-        user = request.user
-        author = User.objects.get(id=pk)
-        if request.method == 'POST':
-            if user == author:
-                return Response(data={'error':
-                                      'Нельзя подписываться на себя'})
-            elif Follow.objects.filter(user=user, author=author).exists():
-                return Response(data={'error':
-                                      'Вы уже подписанны на данного автора'},
-                                status=status.HTTP_400_BAD_REQUEST)
-            Follow.objects.create(user=user, author=author)
-            serializer = UserFollowSerializer(author, context={'request':
-                                                               request})
-            return Response(serializer.data)
-        elif request.method == 'DELETE':
-            if (Follow.objects.filter(user=user, author=author).
-               exists()) is False:
-                return Response(data={'error':
-                                      'Вы не были подписанны на автора'},
-                                status=status.HTTP_400_BAD_REQUEST)
-            Follow.objects.filter(user=user, author=author).delete()
-            return Response(status=status.HTTP_200_OK)
+    def subscribe(self, request, pk, model_1=User,
+                  model_2=Follow, serial=UserFollowSerializer):
+        dict_1 = {'error': 'Нельзя подписываться на себя'}
+        dict_2 = {'error': 'Вы уже подписанны на данного автора'}
+        return self.get_user_action(self, request, pk, model_1,
+                                    model_2, serial,
+                                    dict_1, dict_2)

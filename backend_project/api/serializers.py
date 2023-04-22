@@ -1,25 +1,14 @@
 from rest_framework import serializers
-import base64
-from django.core.files.base import ContentFile
-from users.models import User
+from recipe.models import User
 from users.serializers import UserSerializer
-from .models import Tag, Ingredients, Recipes, RecipesIngredients
-
-
-class Base64ImageField(serializers.ImageField):
-    def to_internal_value(self, data):
-        if isinstance(data, str) and data.startswith('data:image'):
-            format, imgstr = data.split(';base64,')
-            ext = format.split('/')[-1]
-            data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
-
-        return super().to_internal_value(data)
+from recipe.models import Tag, Ingredients, Recipes, RecipesIngredients
+from .utils import Base64ImageField
 
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = ('id', 'name', 'hexcolor', 'slug')
+        fields = ('id', 'name', 'color', 'slug')
 
 
 class RecipesShortSerializer(serializers.ModelSerializer):
@@ -152,7 +141,6 @@ class CreateUpdateRecipeSerializer(serializers.ModelSerializer):
 
 class UserFollowSerializer(serializers.ModelSerializer):
     is_subscribed = serializers.SerializerMethodField()
-    # recipes = RecipesShortSerializer(read_only=True, many=True)
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
 

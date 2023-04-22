@@ -1,20 +1,18 @@
 from rest_framework import viewsets
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
-
 from rest_framework.decorators import action
-from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 from .pagination import CustomPagination
 from .permissions import AdminAuthorPermission
-from .models import (Tag, Ingredients, Recipes, ShoppingCart,
-                     Favorite, RecipesIngredients)
+from recipe.models import (Tag, Ingredients, Recipes, ShoppingCart,
+                           Favorite, RecipesIngredients)
 from .serializers import (TagSerializer, IngredientsSerializer,
                           RecipesSerializer,
                           RecipesShortSerializer, CreateUpdateRecipeSerializer)
 from .func import create_cart
-from django.http import HttpResponse
+from .utils import CustomMixin
+from django.http import FileResponse
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -31,11 +29,10 @@ class IngredientsViewSet(viewsets.ModelViewSet):
     search_fields = ('^name',)
 
 
-class RecipesViewSet(viewsets.ModelViewSet):
+class RecipesViewSet(CustomMixin, viewsets.ModelViewSet):
     pagination_class = CustomPagination
     permission_classes = [AdminAuthorPermission, ]
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
-    # filterset_class = RecipesFilter
     filterset_fields = ('author',)
 
     def get_queryset(self):
@@ -53,9 +50,9 @@ class RecipesViewSet(viewsets.ModelViewSet):
         return queryset
 
     def get_serializer_class(self):
-        if self.action == 'list' or self.action == 'retrieve':
+        if self.action in ['list', 'retrieve']:
             return RecipesSerializer
-        elif self.action == 'create' or self.action == 'partial_update':
+        elif self.action in ['create', 'partial_update']:
             return CreateUpdateRecipeSerializer
 
     def perform_create(self, serializer):
@@ -63,65 +60,38 @@ class RecipesViewSet(viewsets.ModelViewSet):
 
     @action(methods=['post', 'delete'], detail=True,
             permission_classes=[IsAuthenticated])
-    def shopping_cart(self, request, pk):
-        user = request.user
-        pk = self.kwargs.get('pk')
-        recipe = Recipes.objects.get(id=pk)
-        if request.method == 'POST':
-            if ShoppingCart.objects.filter(
-                    user=user).filter(recipe=recipe).exists():
-                return Response(data={
-                                'error':
-                                'Данный рецепт уже добавлен в корзину'},
-                                status=status.HTTP_400_BAD_REQUEST)
-            ShoppingCart.objects.create(user=user, recipe=recipe)
-            serializer = RecipesShortSerializer(recipe)
-            return Response(serializer.data)
-        elif request.method == 'DELETE':
-            if ShoppingCart.objects.filter(user=user).filter(
-                    recipe=recipe).exists() is False:
-                return Response(data={
-                                'error':
-                                'Данный рецепт отсутствует в корзине'},
-                                status=status.HTTP_400_BAD_REQUEST)
-            ShoppingCart.objects.filter(
-                user=user).filter(
-                recipe=recipe).delete()
+    def shopping_cart(self, request, pk, model_1=Recipes,
+                      model_2=ShoppingCart,
+                      serial=RecipesShortSerializer):
+        dict_1 = {'error': 'Данный рецепт уже добавлен в корзину'}
+        dict_2 = {'error': 'Данный рецепт отсутствует в корзине'}
+        return self.get_user_action(request, pk, model_1,
+                                    model_2, serial, dict_1,
+                                    dict_2)
 
     @action(methods=['get'], detail=False,
             permission_classes=[IsAuthenticated])
     def download_shopping_cart(self, request):
-        response = HttpResponse(content_type='text/plain')
-        response['Content-Disposition'] = ('attachment;'
-                                           'filename=shopping_cart.txt')
+        file = open('cart.txt', 'w')
         user = request.user
         recipes = RecipesIngredients.objects.filter(
             recipe__added_to_cart__user=user).select_related()
         result = create_cart(recipes)
         for key, value in result:
-            response.write(f'{key}-{value}\n')
+            line = (f'{key}-{value}\n')
+            file.write(line)
+        file.close()
+        response = FileResponse(open('cart.txt', 'rb'),
+                                as_attachment=True)
         return response
 
     @action(methods=['post', 'delete'], detail=True,
             permission_classes=[IsAuthenticated])
-    def favorite(self, request, pk):
-        user = request.user
-        pk = self.kwargs.get('pk')
-        recipe = Recipes.objects.get(id=pk)
-        if request.method == 'POST':
-            if Favorite.objects.filter(user=user).filter(
-                    recipe=recipe).exists():
-                return Response(
-                    data={'error':
-                          'Данный рецепт уже добавлен в избранные'},
-                    status=status.HTTP_400_BAD_REQUEST)
-            Favorite.objects.create(user=user, recipe=recipe)
-            serializer = RecipesShortSerializer(recipe)
-            return Response(serializer.data)
-        elif request.method == 'DELETE':
-            if Favorite.objects.filter(user=user).filter(
-                    recipe=recipe).exists() is False:
-                return Response(data={'error':
-                                      'Данный рецепт не был в избранных'},
-                                status=status.HTTP_400_BAD_REQUEST)
-            Favorite.objects.filter(user=user).filter(recipe=recipe).delete()
+    def favorite(self, request, pk, model_1=Recipes,
+                 model_2=Favorite,
+                 serial=RecipesShortSerializer):
+        dict_1 = {'error': 'Данный рецепт уже добавлен в избранные'}
+        dict_2 = {'error': 'Данный рецепт не был в избранных'}
+        return self.get_user_action(request, pk, model_1,
+                                    model_2, serial, dict_1,
+                                    dict_2)
