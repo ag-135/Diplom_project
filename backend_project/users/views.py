@@ -3,7 +3,7 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
 from .models import User
 from .pagination import UserPagination
 from .serializers import (UserCreateSerializer, UserPasswordSerializer,
@@ -15,7 +15,7 @@ from api.serializers import UserFollowSerializer
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     pagination_class = UserPagination
-    permission_classes = [AllowAny, ]
+    # permission_classes = [IsAuthenticatedOrReadOnly, ]
 
     def get_serializer_class(self):
         if self.action == 'create':
