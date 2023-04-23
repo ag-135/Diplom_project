@@ -1,15 +1,18 @@
+from django.contrib.auth import get_user_model
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import (IsAuthenticated,
                                         AllowAny)
-from .models import User
 from .pagination import UserPagination
 from .serializers import (UserCreateSerializer, UserPasswordSerializer,
                           UserSerializer)
 from recipe.models import Follow
 from api.serializers import UserFollowSerializer
 from api.utils import CustomMixin
+
+
+User = get_user_model()
 
 
 class UserViewSet(CustomMixin, viewsets.ModelViewSet):
