@@ -11,7 +11,7 @@ from .serializers import (TagSerializer, IngredientsSerializer,
                           RecipesSerializer,
                           RecipesShortSerializer, CreateUpdateRecipeSerializer)
 from .func import create_cart
-from .utils import CustomMixin
+from .mixins import PostDeleteMixin
 from django.http import FileResponse
 
 
@@ -29,7 +29,7 @@ class IngredientsViewSet(viewsets.ModelViewSet):
     search_fields = ('^name',)
 
 
-class RecipesViewSet(CustomMixin, viewsets.ModelViewSet):
+class RecipesViewSet(PostDeleteMixin, viewsets.ModelViewSet):
     pagination_class = CustomPagination
     permission_classes = [AdminAuthorPermission, ]
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)

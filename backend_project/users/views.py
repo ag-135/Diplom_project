@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import viewsets
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import (IsAuthenticated,
@@ -9,13 +10,13 @@ from .serializers import (UserCreateSerializer, UserPasswordSerializer,
                           UserSerializer)
 from recipe.models import Follow
 from api.serializers import UserFollowSerializer
-from api.utils import CustomMixin
+from api.mixins import PostDeleteMixin
 
 
 User = get_user_model()
 
 
-class UserViewSet(CustomMixin, viewsets.ModelViewSet):
+class UserViewSet(PostDeleteMixin, viewsets.ModelViewSet):
     queryset = User.objects.all()
     pagination_class = UserPagination
     permission_classes = [AllowAny, ]
@@ -39,8 +40,9 @@ class UserViewSet(CustomMixin, viewsets.ModelViewSet):
         password = request.data.get("new_password")
         serializer = UserPasswordSerializer(user, data={"password": password})
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
+            user.set_password(password)
+            user.save()
+            return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(serializer.errors)
 
     @action(methods=['get'],

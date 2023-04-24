@@ -2,7 +2,7 @@ from rest_framework import serializers
 from recipe.models import User
 from users.serializers import UserSerializer
 from recipe.models import Tag, Ingredients, Recipes, RecipesIngredients
-from .utils import Base64ImageField
+from .image import Base64ImageField
 
 
 class TagSerializer(serializers.ModelSerializer):
