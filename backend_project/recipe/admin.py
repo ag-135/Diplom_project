@@ -22,4 +22,3 @@ admin.site.register(Tag)
 admin.site.register(Ingredients, IngredientsAdmin)
 admin.site.register(Recipes, RecipeAdmin)
 admin.site.register(RecipesIngredients)
-

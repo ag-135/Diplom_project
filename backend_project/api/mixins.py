@@ -16,11 +16,10 @@ class PostDeleteMixin:
             model_2.objects.create(user=user, recipe=object)
             serializer = serial(object)
             return Response(serializer.data)
-        elif request.method == 'DELETE':
-            if model_2.objects.filter(
-                    user=user).filter(
-                    recipe=object).exists() is False:
-                return Response(data=dict_2,
-                                status=status.HTTP_400_BAD_REQUEST)
-            model_2.objects.filter(user=user).filter(recipe=object).delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+        if model_2.objects.filter(
+                user=user).filter(
+                recipe=object).exists() is False:
+            return Response(data=dict_2,
+                            status=status.HTTP_400_BAD_REQUEST)
+        model_2.objects.filter(user=user).filter(recipe=object).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

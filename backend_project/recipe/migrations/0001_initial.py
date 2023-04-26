@@ -27,11 +27,13 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "name",
-                    models.CharField(max_length=250, verbose_name="ingredient's name"),
+                    models.CharField(max_length=250,
+                                     verbose_name="ingredient's name"),
                 ),
                 (
                     "measurement_unit",
-                    models.CharField(max_length=50, verbose_name="measurement unit"),
+                    models.CharField(max_length=50,
+                                     verbose_name="measurement unit"),
                 ),
             ],
             options={
@@ -53,7 +55,8 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "name",
-                    models.CharField(max_length=250, verbose_name="recipe's name"),
+                    models.CharField(max_length=250,
+                                     verbose_name="recipe's name"),
                 ),
                 (
                     "image",
@@ -65,8 +68,10 @@ class Migration(migrations.Migration):
                         verbose_name="recipe's image",
                     ),
                 ),
-                ("text", models.TextField(verbose_name="recipe's description'")),
-                ("cooking_time", models.IntegerField(verbose_name="cooking time")),
+                ("text", models.TextField(verbose_name="recipe's"
+                                          "description'")),
+                ("cooking_time", models.IntegerField(verbose_name=""
+                                                     "cooking time")),
                 (
                     "author",
                     models.ForeignKey(
@@ -94,10 +99,12 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
-                ("name", models.CharField(max_length=250, verbose_name="tag's name")),
+                ("name", models.CharField(max_length=250,
+                                          verbose_name="tag's name")),
                 (
                     "hexcolor",
-                    models.CharField(max_length=250, verbose_name="tag's color"),
+                    models.CharField(max_length=250,
+                                     verbose_name="tag's color"),
                 ),
                 ("slug", models.SlugField(verbose_name="tag's slug")),
             ],
@@ -154,7 +161,8 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
-                ("amount", models.IntegerField(verbose_name="amount of ingredient")),
+                ("amount", models.IntegerField(verbose_name=""
+                                               "amount of ingredient")),
                 (
                     "ingredient",
                     models.ForeignKey(
@@ -189,7 +197,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="recipes",
             name="tags",
-            field=models.ManyToManyField(to="recipe.tag", verbose_name="recipe's tags"),
+            field=models.ManyToManyField(to="recipe.tag",
+                                         verbose_name="recipe's tags"),
         ),
         migrations.CreateModel(
             name="Follow",
