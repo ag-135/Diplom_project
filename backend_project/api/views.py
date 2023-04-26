@@ -41,19 +41,18 @@ class RecipesViewSet(PostDeleteMixin, viewsets.ModelViewSet):
         queryset = Recipes.objects.all()
         if self.request.query_params.getlist('tags'):
             list = self.request.query_params.getlist('tags')
-            queryset = queryset.filter(tags__slug__in=list).distinct()
+            queryset.filter(tags__slug__in=list).distinct()
         if self.request.query_params.get('is_favorited') == '1':
-            queryset = queryset.filter(liked_users__user=user)
+            queryset.filter(liked_users__user=user)
         if self.request.query_params.get('is_in_shopping_cart') == '1':
-            queryset = queryset.filter(added_to_cart__user=user)
-
+            queryset.filter(added_to_cart__user=user)
         return queryset
 
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:
             return RecipesSerializer
-        elif self.action in ['create', 'partial_update']:
-            return CreateUpdateRecipeSerializer
+        # elif self.action in ['create', 'partial_update']:
+        return CreateUpdateRecipeSerializer
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
