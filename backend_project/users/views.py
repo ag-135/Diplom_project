@@ -55,9 +55,10 @@ class UserViewSet(PostDeleteMixin, viewsets.ModelViewSet):
         serializer = UserFollowSerializer(pagination,
                                           many=True,
                                           context={
-                                            'request': request,
-                                            'recipes_limit': recipes_limit,
-                                            })
+                                              'request': request,
+                                              'recipes_limit': recipes_limit,
+                                          }
+                                          )
         return self.get_paginated_response(serializer.data)
 
     @action(methods=['post', 'delete'],
