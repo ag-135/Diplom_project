@@ -82,8 +82,8 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            sudo docker pull agritskov/foodgram_backend:latest
-            sudo docker pull agritskov/foodgram_frontend:latest
+            sudo docker pull agritskov/backend:latest
+            sudo docker pull agritskov/frontend:latest
             sudo docker-compose stop
             sudo docker-compose rm backend
             rm .env
