@@ -80,9 +80,8 @@ class RecipesViewSet(PostDeleteMixin, viewsets.ModelViewSet):
             line = (f'{key}-{value}\n')
             file.write(line)
         file.close()
-        response = FileResponse(open('cart.txt', 'rb'),
-                                as_attachment=True)
-        return response
+        return FileResponse(open('cart.txt', 'rb'),
+                            as_attachment=True)
 
     @action(methods=['post', 'delete'], detail=True,
             permission_classes=[IsAuthenticated])
