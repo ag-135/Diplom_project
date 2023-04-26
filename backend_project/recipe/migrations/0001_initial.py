@@ -68,10 +68,8 @@ class Migration(migrations.Migration):
                         verbose_name="recipe's image",
                     ),
                 ),
-                ("text", models.TextField(verbose_name="recipe's"
-                                          "description'")),
-                ("cooking_time", models.IntegerField(verbose_name=""
-                                                     "cooking time")),
+                ("text", models.TextField(verbose_name="recipe's description'")),
+                ("cooking_time", models.IntegerField(verbose_name="cooking time")),
                 (
                     "author",
                     models.ForeignKey(
@@ -161,8 +159,7 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
-                ("amount", models.IntegerField(verbose_name=""
-                                               "amount of ingredient")),
+                ("amount", models.IntegerField(verbose_name="amount of ingredient")),
                 (
                     "ingredient",
                     models.ForeignKey(
