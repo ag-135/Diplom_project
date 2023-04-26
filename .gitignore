@@ -130,3 +130,9 @@ dmypy.json
 
 # .idea
 .idea
+
+# additional files
+fill_db.py
+dumb.json
+frontend/
+frontend/yarn.lock
