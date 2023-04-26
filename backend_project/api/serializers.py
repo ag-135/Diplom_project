@@ -163,8 +163,7 @@ class UserFollowSerializer(serializers.ModelSerializer):
         return user.following.filter(author=obj).exists()
 
     def get_recipes_count(self, obj):
-        result = obj.recipes.count()
-        return result
+        return obj.recipes.count()
 
     def get_recipes(self, obj):
         user = self.context.get('request').user
