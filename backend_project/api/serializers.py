@@ -1,7 +1,7 @@
+from recipe.models import Ingredients, Recipes, RecipesIngredients, Tag, User
 from rest_framework import serializers
-from recipe.models import User
 from users.serializers import UserSerializer
-from recipe.models import Tag, Ingredients, Recipes, RecipesIngredients
+
 from .image import Base64ImageField
 
 
