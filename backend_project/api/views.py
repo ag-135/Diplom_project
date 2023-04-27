@@ -41,11 +41,11 @@ class RecipesViewSet(PostDeleteMixin, viewsets.ModelViewSet):
         queryset = Recipes.objects.all()
         if self.request.query_params.getlist('tags'):
             list = self.request.query_params.getlist('tags')
-            queryset.filter(tags__slug__in=list).distinct()
+            queryset = queryset.filter(tags__slug__in=list).distinct()
         if self.request.query_params.get('is_favorited') == '1':
-            queryset.filter(liked_users__user=user)
+            queryset = queryset.filter(liked_users__user=user)
         if self.request.query_params.get('is_in_shopping_cart') == '1':
-            queryset.filter(added_to_cart__user=user)
+            queryset = queryset.filter(added_to_cart__user=user)
         return queryset
 
     def get_serializer_class(self):
