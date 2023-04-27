@@ -15,6 +15,8 @@ class RecipeAdmin(admin.ModelAdmin):
 
 
 class IngredientsAdmin(admin.ModelAdmin):
+    list_display = ('name', 'measurement_unit')
+    list_filter = ('name',)
     inlines = (RecipesIngridientsInline,)
 
 
