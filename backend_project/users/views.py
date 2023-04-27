@@ -68,6 +68,6 @@ class UserViewSet(PostDeleteMixin, viewsets.ModelViewSet):
                   model_2=Follow, serial=UserFollowSerializer):
         dict_1 = {'error': 'Нельзя подписываться на себя'}
         dict_2 = {'error': 'Вы уже подписанны на данного автора'}
-        return self.get_user_action(self, request, pk, model_1,
+        return self.get_user_action(request, pk, model_1,
                                     model_2, serial,
                                     dict_1, dict_2)
