@@ -44,7 +44,7 @@ jobs:
         with:
           context: ./backend_project
           push: true
-          tags: agritskov/foodgram_backend:latest
+          tags: agritskov/backend:latest
 
   build_and_push_frontend_to_docker_hub:
     name: Pushing frontend image to Docker Hub
@@ -66,7 +66,7 @@ jobs:
         with:
           context: ./frontend
           push: true
-          tags: agritskov/foodgram_frontend:latest
+          tags: agritskov/frontend:latest
 
   deploy:
     runs-on: ubuntu-latest
