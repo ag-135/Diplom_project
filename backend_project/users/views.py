@@ -71,7 +71,7 @@ class UserViewSet(viewsets.ModelViewSet):
             if user == author:
                 return Response(data={'error':
                                       'Нельзя подписываться на себя'})
-            elif Follow.objects.filter(user=user, author=author).exists():
+            if Follow.objects.filter(user=user, author=author).exists():
                 return Response(data={'error':
                                       'Вы уже подписанны на данного автора'},
                                 status=status.HTTP_400_BAD_REQUEST)
