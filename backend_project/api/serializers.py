@@ -166,8 +166,13 @@ class UserFollowSerializer(serializers.ModelSerializer):
         return obj.recipes.count()
 
     def get_recipes(self, obj):
+        print(self.context.get('recipes_limit'))
         user = self.context.get('request').user
-        limit = int(self.context.get('recipes_limit'))
-        recipes = Recipes.objects.filter(author__followers__user=user)[:limit]
+        if self.context.get('recipes_limit') is not None:
+            limit = int(self.context.get('recipes_limit'))
+            recipes = Recipes.objects.filter(
+                author__followers__user=user)[:limit]
+        else:
+            recipes = Recipes.objects.filter(author__followers__user=user)
         serializer = RecipesShortSerializer(recipes, many=True)
         return serializer.data

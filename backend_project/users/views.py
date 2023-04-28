@@ -1,4 +1,3 @@
-from api.mixins import PostDeleteMixin
 from api.serializers import UserFollowSerializer
 from django.contrib.auth import get_user_model
 from recipe.models import Follow
@@ -14,7 +13,7 @@ from .serializers import (UserCreateSerializer, UserPasswordSerializer,
 User = get_user_model()
 
 
-class UserViewSet(PostDeleteMixin, viewsets.ModelViewSet):
+class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     pagination_class = UserPagination
     permission_classes = [AllowAny, ]
@@ -64,10 +63,29 @@ class UserViewSet(PostDeleteMixin, viewsets.ModelViewSet):
     @action(methods=['post', 'delete'],
             detail=True,
             permission_classes=[IsAuthenticated])
-    def subscribe(self, request, pk, model_1=User,
-                  model_2=Follow, serial=UserFollowSerializer):
-        dict_1 = {'error': 'Нельзя подписываться на себя'}
-        dict_2 = {'error': 'Вы уже подписанны на данного автора'}
-        return self.get_user_action(request, pk, model_1,
-                                    model_2, serial,
-                                    dict_1, dict_2)
+    def subscribe(self, request, pk):
+        user = request.user
+        author = User.objects.get(id=pk)
+        recipes_limit = self.request.query_params.get('recipes_limit')
+        if request.method == 'POST':
+            if user == author:
+                return Response(data={'error':
+                                      'Нельзя подписываться на себя'})
+            elif Follow.objects.filter(user=user, author=author).exists():
+                return Response(data={'error':
+                                      'Вы уже подписанны на данного автора'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            Follow.objects.create(user=user, author=author)
+            serializer = UserFollowSerializer(author, context={'request':
+                                                               request,
+                                                               'recipes_limit':
+                                                               recipes_limit})
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        elif request.method == 'DELETE':
+            if (Follow.objects.filter(user=user, author=author).
+               exists()) is False:
+                return Response(data={'error':
+                                      'Вы не были подписанны на автора'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            Follow.objects.filter(user=user, author=author).delete()
+            return Response(status=status.HTTP_200_OK)
