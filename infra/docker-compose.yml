@@ -11,9 +11,7 @@ services:
     env_file:
       - ./.env
   web:
-    build:
-      context: ../backend_project
-      dockerfile: Dockerfile
+    image: agritskov/backend
     restart: always
     volumes:
       - static_value:/app/static/
@@ -24,9 +22,7 @@ services:
       - ./.env
 
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    image: agritskov/frontend
     volumes:
       - ../frontend/:/app/result_build/
   nginx:
