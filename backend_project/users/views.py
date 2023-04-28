@@ -47,7 +47,8 @@ class UserViewSet(viewsets.ModelViewSet):
             pagination_class=UserPagination,
             permission_classes=[IsAuthenticated, ])
     def subscriptions(self, request):
-        query = User.objects.filter(followers__user=request.user).order_by('id')
+        query = User.objects.filter(
+            followers__user=request.user).order_by('id')
         recipes_limit = self.request.query_params.get('recipes_limit')
         pagination = self.paginate_queryset(query)
         serializer = UserFollowSerializer(pagination,
